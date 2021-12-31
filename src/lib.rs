@@ -19,9 +19,9 @@ pub mod conn;
 #[cfg(feature = "conn")]
 pub use conn::*;
 
-#[cfg(feature = "codec")]
+#[cfg(feature = "handler")]
 pub mod handler;
-#[cfg(feature = "codec")]
+#[cfg(feature = "handler")]
 pub use handler::*;
 
 #[cfg(test)]

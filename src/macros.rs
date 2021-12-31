@@ -1,3 +1,4 @@
+#[cfg(feature = "conn")]
 macro_rules! trait_alias {
     ($name:ident = $($bounds:tt)*) => {
         pub trait $name: $($bounds)* {}

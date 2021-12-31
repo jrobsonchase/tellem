@@ -1,4 +1,5 @@
-// use std::fmt::Debug;
+// The inspector example requires the "handler" feature
+#![cfg(feature = "handler")]
 
 use bytes::BytesMut;
 use futures::prelude::*;

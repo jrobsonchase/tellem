@@ -29,7 +29,7 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl Parser {
-    #[instrument(skip(self, buf))]
+    #[instrument(level = "trace", skip(self, buf))]
     pub fn parse(&mut self, buf: &mut BytesMut) -> Result<Either<bool, Event>> {
         debug!(?buf, "parsing telnet event");
         let mut off = None;

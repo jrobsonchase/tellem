@@ -4,8 +4,10 @@ use std::task::{Context, Poll};
 
 use crate::codec::Error;
 use crate::event::Event;
-use crate::handler::{ErasedHandler, Handler};
 use crate::parser::Parser;
+
+#[cfg(feature = "handler")]
+use crate::handler::{ErasedHandler, Handler};
 
 use pin_project::pin_project;
 
@@ -13,15 +15,13 @@ use pin_project::pin_project;
 use tracing::{debug, info, span, trace, warn, Instrument, Level};
 
 use futures::prelude::*;
-use futures::{
-    channel::mpsc,
-    stream::{SplitSink, SplitStream},
-};
-use tokio::{
-    io::{AsyncRead, AsyncWrite},
-    runtime::Handle,
-    select,
-};
+use futures::stream::{SplitSink, SplitStream};
+use tokio::io::{AsyncRead, AsyncWrite};
+
+#[cfg(feature = "handler")]
+use futures::channel::mpsc;
+#[cfg(feature = "handler")]
+use tokio::{runtime::Handle, select};
 
 use tokio_util::codec::{Decoder, Framed};
 
@@ -107,6 +107,7 @@ impl TnConn<(), ()> {
         }
     }
 
+    #[cfg(feature = "handler")]
     fn pair() -> TnChan<impl SrvSink, impl SrvStream, impl ClSink, impl ClStream> {
         let (cl_tx, srv_rx) = mpsc::unbounded::<Result<Event, Error>>();
         let (srv_tx, cl_rx) = mpsc::unbounded::<Event>();
@@ -146,10 +147,12 @@ where
         }
     }
 
+    #[cfg(feature = "handler")]
     pub fn with_handler(self, handler: impl Handler<T, R>) -> TnConn<impl SrvSink, impl SrvStream> {
         start_stream(Handle::current(), handler, self)
     }
 
+    #[cfg(feature = "handler")]
     pub fn with_handler_erased(
         self,
         handler: impl ErasedHandler,
@@ -163,6 +166,7 @@ pub struct TnChan<UTx, URx, DTx, DRx> {
     pub downstream: TnConn<DTx, DRx>,
 }
 
+#[cfg(feature = "handler")]
 impl<UTx, URx, DTx, DRx> TnChan<UTx, URx, DTx, DRx> {
     fn replace_upstream<NTx, NRx>(
         self,
@@ -178,6 +182,7 @@ impl<UTx, URx, DTx, DRx> TnChan<UTx, URx, DTx, DRx> {
     }
 }
 
+#[cfg(feature = "handler")]
 fn start_stream<T, R>(
     handle: Handle,
     mut handler: impl Handler<T, R>,
