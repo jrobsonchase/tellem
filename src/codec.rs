@@ -1,19 +1,33 @@
 use std::io;
 
-use crate::event::Event;
-use crate::op::Cmd;
-use crate::parser::{self, Parser};
-use crate::util::Escape;
-
-use bytes::{BufMut, BytesMut};
+use bytes::{
+    BufMut,
+    BytesMut,
+};
 use either::Either;
 use thiserror::Error;
-use tokio_util::codec::{Decoder, Encoder};
+use tokio_util::codec::{
+    Decoder,
+    Encoder,
+};
 
+use crate::{
+    event::Event,
+    op::Cmd,
+    parser::{
+        self,
+        Parser,
+    },
+    util::Escape,
+};
+
+/// Errors arising from the telnet codec
 #[derive(Debug, Error)]
 pub enum Error {
+    /// An error occurred while parsing
     #[error("parse error: {0}")]
     Parse(#[from] parser::Error),
+    /// An error occurred in the underlying IO stream
     #[error("io error: {0}")]
     Io(#[from] io::Error),
 }
@@ -24,7 +38,7 @@ impl Decoder for Parser {
 
     fn decode(&mut self, buf: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         Ok(loop {
-            if buf.len() == 0 {
+            if buf.is_empty() {
                 break None;
             }
             match self.parse(buf)? {

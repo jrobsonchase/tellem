@@ -1,33 +1,23 @@
+#![warn(missing_docs)]
+
+//! A simple(-ish) telnet protocol implementation.
+
 #[macro_use]
 mod macros;
 
-pub mod op;
+mod op;
 mod util;
+#[doc(inline)]
 pub use op::*;
-pub mod parser;
+mod parser;
+#[doc(inline)]
 pub use parser::Parser;
-pub mod event;
+mod event;
+#[doc(inline)]
 pub use event::*;
 
 #[cfg(feature = "codec")]
-pub mod codec;
+mod codec;
 #[cfg(feature = "codec")]
+#[doc(inline)]
 pub use codec::*;
-
-#[cfg(feature = "conn")]
-pub mod conn;
-#[cfg(feature = "conn")]
-pub use conn::*;
-
-#[cfg(feature = "handler")]
-pub mod handler;
-#[cfg(feature = "handler")]
-pub use handler::*;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}

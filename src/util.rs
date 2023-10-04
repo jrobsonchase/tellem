@@ -1,6 +1,9 @@
-use crate::op::Cmd;
+use bytes::{
+    BufMut,
+    BytesMut,
+};
 
-use bytes::{BufMut, BytesMut};
+use crate::op::Cmd;
 
 pub trait Escape {
     fn escape_to(&self, dst: &mut BytesMut);

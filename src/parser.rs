@@ -1,18 +1,25 @@
 use std::convert::TryFrom;
 
-use crate::event::Event;
-use crate::op::{Cmd, Opt};
-use crate::util::Escape;
-
+use bytes::{
+    Buf,
+    BytesMut,
+};
+use either::Either;
+use thiserror::Error;
 use tracing::*;
 
-use either::Either;
-
-use thiserror::Error;
-
-use bytes::{Buf, BytesMut};
+use crate::{
+    event::Event,
+    op::{
+        Cmd,
+        Opt,
+    },
+    util::Escape,
+};
 
 #[derive(Default, Debug)]
+/// The telnet parser.
+/// Contains an internal buffer to track intermediate state.
 pub struct Parser {
     sb_opt: Option<Opt>,
     sb_params: Option<BytesMut>,
@@ -30,6 +37,10 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 impl Parser {
     #[instrument(level = "trace", skip(self, buf))]
+    /// Attempt to parse a telnet event from the given buffer.
+    /// Returns `Ok(Either::Left(true))` if the buffer contained a partial
+    /// event, and more data should be added to it before re-attempting the
+    /// parse.
     pub fn parse(&mut self, buf: &mut BytesMut) -> Result<Either<bool, Event>> {
         debug!(?buf, "parsing telnet event");
         let mut off = None;
@@ -126,7 +137,11 @@ impl Parser {
                 trace!("consuming 3 bytes");
                 buf.advance(3);
 
-                return Ok(Either::Right(Event::Negotiation(cmd, Opt::from(opt_op))));
+                let event = Event::Negotiation(cmd, Opt::from(opt_op));
+
+                trace!(?event);
+
+                return Ok(Either::Right(event));
             }
             other => {
                 trace!("consuming 2 bytes");

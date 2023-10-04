@@ -1,7 +1,11 @@
-use num_enum::{IntoPrimitive, TryFromPrimitive};
+use num_enum::{
+    IntoPrimitive,
+    TryFromPrimitive,
+};
 
 #[derive(Copy, Clone, Debug, TryFromPrimitive, IntoPrimitive, PartialEq, Eq)]
 #[repr(u8)]
+/// A telnet command.
 pub enum Cmd {
     /// End of subnegotiation parameters.
     SE = 240,
@@ -56,8 +60,11 @@ impl PartialEq<u8> for Cmd {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+/// A telnent option.
 pub enum Opt {
+    /// A recognized telnet option.
     Known(KnownOpt),
+    /// A valid, but unrecognized option.
     Unknown(u8),
 }
 
@@ -82,6 +89,8 @@ impl From<Opt> for u8 {
 #[derive(Copy, Clone, Eq, PartialEq, Debug, TryFromPrimitive, IntoPrimitive)]
 #[repr(u8)]
 #[allow(non_camel_case_types)]
+/// A known telnet option.
+#[allow(missing_docs)]
 pub enum KnownOpt {
     TRANSMIT_BINARY = 0,
     ECHO = 1,
