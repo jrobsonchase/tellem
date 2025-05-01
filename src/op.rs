@@ -7,6 +7,8 @@ use num_enum::{
 #[repr(u8)]
 /// A telnet command.
 pub enum Cmd {
+    /// End of Record
+    EOR = 239
     /// End of subnegotiation parameters.
     SE = 240,
     /// No operation.
