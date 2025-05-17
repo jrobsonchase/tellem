@@ -8,7 +8,7 @@ use num_enum::{
 /// A telnet command.
 pub enum Cmd {
     /// End of Record
-    EOR = 239
+    EOR = 239,
     /// End of subnegotiation parameters.
     SE = 240,
     /// No operation.
